@@ -9,60 +9,50 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import jp.wasabeef.glide.transformations.CropTransformation;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHolder>{
-
+    private int imagePreviewSize;
     private ImageSelectedListener imageSelectedListener;
     private final List<Image> data = new ArrayList<>();
 
-    ImagesAdapter(ImagesListViewModel viewModel, LifecycleOwner lifecycleOwner, ImageSelectedListener imageSelectedListener) {
+    ImagesAdapter(ImageSelectedListener imageSelectedListener, int imagePreviewSize) {
         this.imageSelectedListener = imageSelectedListener;
-        viewModel.getImageList().observe(lifecycleOwner, imageList -> {
-            data.clear();
-            if (imageList != null) {
-                data.addAll(imageList);
-                notifyDataSetChanged();
-            }
-        });
+        this.imagePreviewSize = imagePreviewSize;
     }
 
     @NonNull
     @Override
     public RepoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final ViewDataBinding binding = DataBindingUtil
-                .inflate(LayoutInflater.from(parent.getContext()), R.layout.layout_image_view_item, parent, false);
-
-        ImagesAdapter.RepoViewHolder holder = new ImagesAdapter.RepoViewHolder(binding.getRoot(), imageSelectedListener);
-        holder.setBinding(binding);
-        return holder;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.layout_image_view_item, parent, false);
+        view.getLayoutParams().height = imagePreviewSize;
+        //view.getLayoutParams().width = imagePreviewSize;
+        view.requestLayout();
+        return new RepoViewHolder(view, imageSelectedListener);
     }
 
 
     @Override
-    public void onBindViewHolder(ImagesAdapter.RepoViewHolder holder, int position) {
+    public void onBindViewHolder(RepoViewHolder holder, int position) {
         holder.bind(data.get(position));
-        holder.getBinding().executePendingBindings();
     }
 
     @Override
     public int getItemCount() {
         return data.size();
     }
-/*
-    @Override
-    public long getItemId(int position) {
-        return data.get(position).getId();
+
+    public void updateData(List<Image> imageList) {
+        data.addAll(imageList);
+        notifyDataSetChanged();
     }
-*/
+
     static final class RepoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         private Image image;
@@ -77,13 +67,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
                 }
             });
         }
-        public ViewDataBinding getBinding() {
-            return binding;
-    }
 
-        public void setBinding(ViewDataBinding binding) {
-        this.binding = binding;
-    }
         void bind(Image image) {
             this.image = image;
             Glide.with(imageView.getContext())

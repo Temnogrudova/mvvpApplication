@@ -2,14 +2,17 @@ package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import java.util.List;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
 public class ImagesListFragment extends Fragment  implements ImageSelectedListener {
@@ -41,9 +45,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         viewModelFactory = new ViewModelFactory(new Repository());
         //get ViewModel using ViewModelProviders and then tech data
         imagesListViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesListViewModel.class);
-        mAdapter = new ImagesAdapter(imagesListViewModel, getActivity(), this);
-        imagesList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        imagesList.setAdapter(mAdapter);
+        initImagesListWithOrientationParams();
         if (savedInstanceState ==null) {
             getImages();
         }
@@ -59,20 +61,46 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         imagesList = view.findViewById(R.id.images_list);
         return view;
     }
+    public void initImagesListWithOrientationParams() {
+        int imagePreviewSize = getPreviewSize();
+        initImagesList(imagePreviewSize);
+      //  initImagesListScrollListener();
+    }
+    private void initImagesList(int imagePreviewSize) {
 
+        mAdapter = new ImagesAdapter(this, imagePreviewSize);
+        imagesList.setAdapter(mAdapter);
+
+    }
+    private int getPreviewSize() {
+        // Recognition of what orientation is now and getting current screen width
+        int imagePreviewSize;
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        GridLayoutManager gridLayoutManager;
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            imagePreviewSize = size.x / Constants.COLUMNS_IN_PORTRAIT;
+            gridLayoutManager = new GridLayoutManager(getActivity(), Constants.COLUMNS_IN_PORTRAIT);
+            imagesList.setLayoutManager(gridLayoutManager);
+        } else {
+            imagePreviewSize = size.x / Constants.COLUMNS_IN_LANDSCAPE;
+            gridLayoutManager = new GridLayoutManager(getActivity(), Constants.COLUMNS_IN_LANDSCAPE);
+            imagesList.setLayoutManager(gridLayoutManager);
+        }
+        return imagePreviewSize;
+    }
     private void observableViewModel() {
         imagesListViewModel.getImageList().observe(this, new Observer<List<Image>>() {
             @Override
             public void onChanged(@Nullable List<Image> imageList) {
-                Log.d("onChanged", "!!!!");
-                // tv.setText(""+ coupon.getCoupon()+" "+ coupon.getCouponCode());
+                mAdapter.updateData(imageList);
             }
         });
         imagesListViewModel.getError().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean isError) {
                 Log.d("onChanged", "!!!!");
-                // tv.setText(""+ coupon.getCoupon()+" "+ coupon.getCouponCode());
             }
         });
 
