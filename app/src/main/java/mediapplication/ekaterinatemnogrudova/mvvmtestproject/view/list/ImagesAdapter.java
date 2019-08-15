@@ -33,7 +33,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
                 notifyDataSetChanged();
             }
         });
-        setHasStableIds(true);
     }
 
     @NonNull
