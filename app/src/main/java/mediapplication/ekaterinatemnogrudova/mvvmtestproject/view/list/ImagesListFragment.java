@@ -26,6 +26,8 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.COLUMNS;
+
 public class ImagesListFragment extends Fragment  implements ImageSelectedListener {
     private ImagesAdapter mAdapter;
     private ViewModelFactory viewModelFactory;
@@ -64,20 +66,14 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         return view;
     }
     public void initImagesListWithOrientationParams() {
-        int imagePreviewSize = 1;//getPreviewSize();
-        initImagesList(imagePreviewSize);
+        initImagesList();
       //  initImagesListScrollListener();
     }
-    int columns = 15;
-    private void initImagesList(int imagePreviewSize) {
 
-      //  mAdapter = new ImagesAdapter(this, imagePreviewSize);
-      //  imagesList.setAdapter(mAdapter);
-
-
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), columns);
+    private void initImagesList() {
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
         imagesList.setLayoutManager(layoutManager);
-        mAdapter = new ImagesAdapter(this, imagePreviewSize);
+        mAdapter = new ImagesAdapter(this);
         imagesList.setAdapter(mAdapter);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -88,31 +84,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
 
     }
 
-    /*
-    private int getPreviewSize() {
-        // Recognition of what orientation is now and getting current screen width
-        int imagePreviewSize;
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        GridLayoutManager gridLayoutManager;
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            imagePreviewSize = size.x / Constants.COLUMNS_IN_PORTRAIT;
-            gridLayoutManager = new GridLayoutManager(getActivity(), Constants.COLUMNS_IN_PORTRAIT);
-            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int i) {
-                    return 0;
-                }
-            });
-            imagesList.setLayoutManager(gridLayoutManager);
-        } else {
-            imagePreviewSize = size.x / Constants.COLUMNS_IN_LANDSCAPE;
-            gridLayoutManager = new GridLayoutManager(getActivity(), Constants.COLUMNS_IN_LANDSCAPE);
-            imagesList.setLayoutManager(gridLayoutManager);
-        }
-        return imagePreviewSize;
-    }*/
+
     private void observableViewModel() {
         imagesListViewModel.getImageList().observe(this, new Observer<List<Item>>() {
             @Override

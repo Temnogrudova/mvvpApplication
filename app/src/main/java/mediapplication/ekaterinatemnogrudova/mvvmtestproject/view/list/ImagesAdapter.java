@@ -18,13 +18,11 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHolder>{
-    private int imagePreviewSize;
     private ImageSelectedListener imageSelectedListener;
     private final List<Item> data = new ArrayList<>();
 
-    ImagesAdapter(ImageSelectedListener imageSelectedListener, int imagePreviewSize) {
+    ImagesAdapter(ImageSelectedListener imageSelectedListener) {
         this.imageSelectedListener = imageSelectedListener;
-        this.imagePreviewSize = imagePreviewSize;
     }
 
     @NonNull
@@ -32,12 +30,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
     public RepoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.layout_image_view_item, parent, false);
-      //  view.getLayoutParams().height = imagePreviewSize;
-      //  view.getLayoutParams().width = imagePreviewSize;
-      //  view.requestLayout();
         return new RepoViewHolder(view, imageSelectedListener);
     }
-
 
     @Override
     public void onBindViewHolder(RepoViewHolder holder, int position) {

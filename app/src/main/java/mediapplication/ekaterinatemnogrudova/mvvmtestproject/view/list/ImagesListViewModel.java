@@ -16,6 +16,8 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.ImagesResponse;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.COLUMNS;
+
 public class ImagesListViewModel extends ViewModel{
     private MutableLiveData<List<Item>> imageList = new MutableLiveData<List<Item>>();
     private MutableLiveData<Boolean> error = new MutableLiveData<Boolean>();
@@ -49,17 +51,16 @@ public class ImagesListViewModel extends ViewModel{
                             {
                                 double imageRatio = (double)it.getWebformatWidth() / (double)it.getWebformatHeight();
                                 Item item = new Item(it.getPreviewUrl(), imageRatio);
-
                                 list.add(item);
                                 rowRatios += item.imageRatio;
                                 if (rowRatios > 2f) {
                                     int used = 0;
                                     for(Item it2: row)
                                     {
-                                        it2.columns = (int)((15 * it2.imageRatio) / rowRatios);
+                                        it2.columns = (int)((COLUMNS * it2.imageRatio) / rowRatios);
                                         used += it2.columns;
                                     }
-                                    item.columns = 15 - used;
+                                    item.columns = COLUMNS - used;
                                     row.clear();
                                     rowRatios = 0f;
                                 } else {
