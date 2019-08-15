@@ -67,8 +67,6 @@ public class ImagesListViewModel extends ViewModel{
                                     row.add(item);
                                 }
                             }
-
-
                             imageList.setValue(list);
                         }
 

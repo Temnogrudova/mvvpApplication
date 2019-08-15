@@ -32,6 +32,9 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     private ImagesAdapter mAdapter;
     private ViewModelFactory viewModelFactory;
     private ImagesListViewModel imagesListViewModel;
+    RecyclerView imagesList;
+   // private boolean isLoading = false;
+    //private int page = 1;
     public static ImagesListFragment newInstance() {
         return new ImagesListFragment();
     }
@@ -54,7 +57,6 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         observableViewModel();
     }
 
-    RecyclerView imagesList;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     }
     public void initImagesListWithOrientationParams() {
         initImagesList();
-      //  initImagesListScrollListener();
+       // initImagesListScrollListener();
     }
 
     private void initImagesList() {
@@ -81,10 +83,32 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
                 return mAdapter.spanSizeLookup(i);
             }
         });
-
     }
+    /*
+    private void initImagesListScrollListener() {
+        imagesList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mImages.size() - 1) {
+                        page++;
+                        getImages();
+                        isLoading = true;
+                    }
+                }
+            }
+        });
+    }
+*/
     private void observableViewModel() {
         imagesListViewModel.getImageList().observe(this, new Observer<List<Item>>() {
             @Override
