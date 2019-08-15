@@ -22,6 +22,7 @@ import java.util.List;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
@@ -45,7 +46,6 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         viewModelFactory = new ViewModelFactory(new Repository());
         //get ViewModel using ViewModelProviders and then tech data
         imagesListViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesListViewModel.class);
-        initImagesListWithOrientationParams();
         if (savedInstanceState ==null) {
             getImages();
         }
@@ -59,19 +59,36 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_images, container, false);
         imagesList = view.findViewById(R.id.images_list);
+        initImagesListWithOrientationParams();
+
         return view;
     }
     public void initImagesListWithOrientationParams() {
-        int imagePreviewSize = getPreviewSize();
+        int imagePreviewSize = 1;//getPreviewSize();
         initImagesList(imagePreviewSize);
       //  initImagesListScrollListener();
     }
+    int columns = 15;
     private void initImagesList(int imagePreviewSize) {
 
+      //  mAdapter = new ImagesAdapter(this, imagePreviewSize);
+      //  imagesList.setAdapter(mAdapter);
+
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), columns);
+        imagesList.setLayoutManager(layoutManager);
         mAdapter = new ImagesAdapter(this, imagePreviewSize);
         imagesList.setAdapter(mAdapter);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                return mAdapter.spanSizeLookup(i);
+            }
+        });
 
     }
+
+    /*
     private int getPreviewSize() {
         // Recognition of what orientation is now and getting current screen width
         int imagePreviewSize;
@@ -82,6 +99,12 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             imagePreviewSize = size.x / Constants.COLUMNS_IN_PORTRAIT;
             gridLayoutManager = new GridLayoutManager(getActivity(), Constants.COLUMNS_IN_PORTRAIT);
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int i) {
+                    return 0;
+                }
+            });
             imagesList.setLayoutManager(gridLayoutManager);
         } else {
             imagePreviewSize = size.x / Constants.COLUMNS_IN_LANDSCAPE;
@@ -89,11 +112,11 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
             imagesList.setLayoutManager(gridLayoutManager);
         }
         return imagePreviewSize;
-    }
+    }*/
     private void observableViewModel() {
-        imagesListViewModel.getImageList().observe(this, new Observer<List<Image>>() {
+        imagesListViewModel.getImageList().observe(this, new Observer<List<Item>>() {
             @Override
-            public void onChanged(@Nullable List<Image> imageList) {
+            public void onChanged(@Nullable List<Item> imageList) {
                 mAdapter.updateData(imageList);
             }
         });
@@ -112,7 +135,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     }
 
     @Override
-    public void onImageSelected(Image image) {
+    public void onImageSelected(Item image) {
         Log.d("onImageSelected", "!!!!");
     }
 }

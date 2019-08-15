@@ -15,11 +15,12 @@ import java.util.List;
 import jp.wasabeef.glide.transformations.CropTransformation;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHolder>{
     private int imagePreviewSize;
     private ImageSelectedListener imageSelectedListener;
-    private final List<Image> data = new ArrayList<>();
+    private final List<Item> data = new ArrayList<>();
 
     ImagesAdapter(ImageSelectedListener imageSelectedListener, int imagePreviewSize) {
         this.imageSelectedListener = imageSelectedListener;
@@ -31,9 +32,9 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
     public RepoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.layout_image_view_item, parent, false);
-        view.getLayoutParams().height = imagePreviewSize;
-        //view.getLayoutParams().width = imagePreviewSize;
-        view.requestLayout();
+      //  view.getLayoutParams().height = imagePreviewSize;
+      //  view.getLayoutParams().width = imagePreviewSize;
+      //  view.requestLayout();
         return new RepoViewHolder(view, imageSelectedListener);
     }
 
@@ -48,14 +49,18 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
         return data.size();
     }
 
-    public void updateData(List<Image> imageList) {
+    public void updateData(List<Item> imageList) {
         data.addAll(imageList);
         notifyDataSetChanged();
     }
 
+    public int spanSizeLookup(int position) {
+        return  data.get(position).columns;
+    }
+
     static final class RepoViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        private Image image;
+        private Item image;
         private ViewDataBinding binding;
 
         RepoViewHolder(View itemView, ImageSelectedListener imageSelectedListener) {
@@ -68,10 +73,10 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.RepoViewHo
             });
         }
 
-        void bind(Image image) {
+        void bind(Item image) {
             this.image = image;
             Glide.with(imageView.getContext())
-                    .load(image.getPreviewUrl()).bitmapTransform(new CropTransformation(imageView.getContext()))
+                    .load(image.url).bitmapTransform(new CropTransformation(imageView.getContext()))
                     .into(imageView);
         }
     }

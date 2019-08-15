@@ -7,6 +7,10 @@ public class Image {
     private String previewURL;
     @SerializedName("id")
     private String id;
+    @SerializedName("webformatHeight")
+    private int webformatHeight;
+    @SerializedName("webformatWidth")
+    private int webformatWidth;
 
     public String getPreviewUrl() {
         return previewURL;
@@ -22,6 +26,22 @@ public class Image {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getWebformatHeight() {
+        return webformatHeight;
+    }
+
+    public void setWebformatHeight(int webformatHeight) {
+        this.webformatHeight = webformatHeight;
+    }
+
+    public int getWebformatWidth() {
+        return webformatWidth;
+    }
+
+    public void setWebformatWidth(int webformatWidth) {
+        this.webformatWidth = webformatWidth;
     }
 
     @Override

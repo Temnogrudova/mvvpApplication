@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -13,14 +14,15 @@ import io.reactivex.schedulers.Schedulers;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.ImagesResponse;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
 public class ImagesListViewModel extends ViewModel{
-    private MutableLiveData<List<Image>> imageList = new MutableLiveData<List<Image>>();
+    private MutableLiveData<List<Item>> imageList = new MutableLiveData<List<Item>>();
     private MutableLiveData<Boolean> error = new MutableLiveData<Boolean>();
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();;
     private Repository mRepository;
-    public LiveData<List<Image>> getImageList() {
+    public LiveData<List<Item>> getImageList() {
         return imageList;
     }
 
@@ -39,7 +41,34 @@ public class ImagesListViewModel extends ViewModel{
                         @Override
                         public void onNext(ImagesResponse response) {
                             error.setValue(false);
-                            imageList.setValue(response.getHits());
+                            ArrayList<Item> list = new ArrayList<Item>();
+                            ArrayList<Item> row = new ArrayList<Item>();
+                            double rowRatios = 0f;
+                            List<Image> il = response.getHits();
+                            for(Image it: il)
+                            {
+                                double imageRatio = (double)it.getWebformatWidth() / (double)it.getWebformatHeight();
+                                Item item = new Item(it.getPreviewUrl(), imageRatio);
+
+                                list.add(item);
+                                rowRatios += item.imageRatio;
+                                if (rowRatios > 2f) {
+                                    int used = 0;
+                                    for(Item it2: row)
+                                    {
+                                        it2.columns = (int)((15 * it2.imageRatio) / rowRatios);
+                                        used += it2.columns;
+                                    }
+                                    item.columns = 15 - used;
+                                    row.clear();
+                                    rowRatios = 0f;
+                                } else {
+                                    row.add(item);
+                                }
+                            }
+
+
+                            imageList.setValue(list);
                         }
 
                         @Override
