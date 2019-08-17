@@ -3,10 +3,8 @@ package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
@@ -15,8 +13,9 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.ImagesResponse;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
-
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.API_KEY;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.COLUMNS;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.DEFAULT_PER_PAGES;
 
 public class ImagesListViewModel extends ViewModel{
     private MutableLiveData<List<Item>> imageList = new MutableLiveData<List<Item>>();
@@ -36,8 +35,8 @@ public class ImagesListViewModel extends ViewModel{
         mRepository = repository;
     }
 
-    public void fetchImages() {
-            compositeDisposable.add(mRepository.getImages("12733826-a936f08aa28501a4cc137e2d7", "", "", "40")
+    public void fetchImages(String query) {
+            compositeDisposable.add(mRepository.getImages(API_KEY, query, "1", DEFAULT_PER_PAGES)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                         @Override

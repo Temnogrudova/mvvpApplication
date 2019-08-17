@@ -6,12 +6,19 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
-
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="@string/search_view_hint"
+            android:layout_centerHorizontal="true" />
         <android.support.v7.widget.RecyclerView
             android:id="@+id/images_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical"
+            android:layout_below="@id/searchView">
 
         </android.support.v7.widget.RecyclerView>
         <ProgressBar

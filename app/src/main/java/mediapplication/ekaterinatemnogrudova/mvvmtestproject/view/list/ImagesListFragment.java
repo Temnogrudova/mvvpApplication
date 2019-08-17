@@ -2,38 +2,38 @@ package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import java.util.List;
 
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.COLUMNS;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.EMPTY_STRING;
 
 public class ImagesListFragment extends Fragment  implements ImageSelectedListener {
     private ImagesAdapter mAdapter;
     private ViewModelFactory viewModelFactory;
     private ImagesListViewModel imagesListViewModel;
     RecyclerView imagesList;
-   // private boolean isLoading = false;
+    SearchView searchView;
+    private boolean isSubmitedClicked = false;
+
+    // private boolean isLoading = false;
     //private int page = 1;
     public static ImagesListFragment newInstance() {
         return new ImagesListFragment();
@@ -52,7 +52,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         //get ViewModel using ViewModelProviders and then tech data
         imagesListViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesListViewModel.class);
         if (savedInstanceState ==null) {
-            getImages();
+            getImages(EMPTY_STRING);
         }
         observableViewModel();
     }
@@ -63,13 +63,10 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         super.onCreate(savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_images, container, false);
         imagesList = view.findViewById(R.id.images_list);
-        initImagesListWithOrientationParams();
-
-        return view;
-    }
-    public void initImagesListWithOrientationParams() {
+        searchView  = view.findViewById(R.id.searchView);
         initImagesList();
-       // initImagesListScrollListener();
+        initSearchViewListener();
+        return view;
     }
 
     private void initImagesList() {
@@ -81,6 +78,32 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
             @Override
             public int getSpanSize(int i) {
                 return mAdapter.spanSizeLookup(i);
+            }
+        });
+    }
+
+    private void initSearchViewListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mAdapter.clear();
+                //page = 1;
+                getImages(query);
+                searchView.clearFocus();
+                isSubmitedClicked = true;
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(searchView.getWidth() > 0 && isSubmitedClicked && newText.length() == 0)
+                {
+                    this.onQueryTextSubmit(EMPTY_STRING);
+                    isSubmitedClicked = false;
+                    return false;
+                }
+                return false;
             }
         });
     }
@@ -125,8 +148,8 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
 
     }
 
-    private void getImages() {
-        imagesListViewModel.fetchImages();
+    private void getImages(String query) {
+        imagesListViewModel.fetchImages(query);
         //mBinder.networkProgress.setVisibility(View.VISIBLE);
     }
 
