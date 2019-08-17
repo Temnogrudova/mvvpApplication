@@ -1,4 +1,4 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.util;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils;
 
 public class Constants {
     public static final String API_KEY = "12733826-a936f08aa28501a4cc137e2d7";

@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list.ImagesListFragment;
-import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.FRAGMENT_IMAGES;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.FRAGMENT_IMAGES;
 
 public class MainActivity extends AppCompatActivity {
     @Override

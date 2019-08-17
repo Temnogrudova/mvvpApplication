@@ -22,8 +22,8 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
-import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.COLUMNS;
-import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.util.Constants.EMPTY_STRING;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.EMPTY_STRING;
 
 public class ImagesListFragment extends Fragment  implements ImageSelectedListener {
     private ImagesAdapter mAdapter;
@@ -32,7 +32,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     RecyclerView imagesList;
     SearchView searchView;
     private boolean isSubmitedClicked = false;
-
+    GridLayoutManager layoutManager;
     // private boolean isLoading = false;
     //private int page = 1;
     public static ImagesListFragment newInstance() {
@@ -52,9 +52,17 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         //get ViewModel using ViewModelProviders and then tech data
         imagesListViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesListViewModel.class);
         if (savedInstanceState ==null) {
-            getImages(EMPTY_STRING);
+            imagesListViewModel.getArticleLiveData();
         }
         observableViewModel();
+
+        imagesList.setAdapter(mAdapter);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                return mAdapter.spanSizeLookup(i);
+            }
+        });
     }
 
     @Nullable
@@ -70,16 +78,9 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     }
 
     private void initImagesList() {
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
+        layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
         imagesList.setLayoutManager(layoutManager);
-        mAdapter = new ImagesAdapter(this);
-        imagesList.setAdapter(mAdapter);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                return mAdapter.spanSizeLookup(i);
-            }
-        });
+        mAdapter = new ImagesAdapter(getActivity());
     }
 
     private void initSearchViewListener() {
@@ -87,9 +88,9 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mAdapter.clear();
+               // mAdapter.clear();
                 //page = 1;
-                getImages(query);
+                imagesListViewModel.getArticleLiveData();
                 searchView.clearFocus();
                 isSubmitedClicked = true;
                 return false;
@@ -107,51 +108,27 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
             }
         });
     }
-    /*
-    private void initImagesListScrollListener() {
-        imagesList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-                if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mImages.size() - 1) {
-                        page++;
-                        getImages();
-                        isLoading = true;
-                    }
-                }
-            }
-        });
-    }
-*/
     private void observableViewModel() {
-        imagesListViewModel.getImageList().observe(this, new Observer<List<Item>>() {
-            @Override
-            public void onChanged(@Nullable List<Item> imageList) {
-                mAdapter.updateData(imageList);
-            }
+        imagesListViewModel.getArticleLiveData().observe(this, pagedList -> {
+            mAdapter.submitList(pagedList);
         });
+        imagesListViewModel.getNetworkState().observe(this, networkState -> {
+            mAdapter.setNetworkState(networkState);
+        });
+
+        /*
         imagesListViewModel.getError().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean isError) {
                 Log.d("onChanged", "!!!!");
             }
         });
+        */
 
     }
 
-    private void getImages(String query) {
-        imagesListViewModel.fetchImages(query);
-        //mBinder.networkProgress.setVisibility(View.VISIBLE);
-    }
+
 
     @Override
     public void onImageSelected(Item image) {
