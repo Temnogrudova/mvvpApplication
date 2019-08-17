@@ -18,6 +18,7 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FragmentImagesBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.main.MainActivity;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ImagesGridViewModel;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
@@ -28,9 +29,6 @@ public class ImagesGridFragment extends Fragment  implements ImageSelectedListen
     private ImagesAdapter adapter;
     private ViewModelFactory viewModelFactory;
     private ImagesGridViewModel imagesGridViewModel;
-    public static ImagesGridFragment newInstance() {
-        return new ImagesGridFragment();
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,7 +110,6 @@ public class ImagesGridFragment extends Fragment  implements ImageSelectedListen
 
     @Override
     public void onImageSelected(Item image) {
-        Toast.makeText(getContext(), String.valueOf(image.getId()), Toast.LENGTH_SHORT).show();
-
+        ((MainActivity) getActivity()).showSwipeFragment();
     }
 }

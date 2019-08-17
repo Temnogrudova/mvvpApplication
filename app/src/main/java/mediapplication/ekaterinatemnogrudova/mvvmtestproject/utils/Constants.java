@@ -6,5 +6,6 @@ public class Constants {
     public static final String DEFAULT_PER_PAGES = "40";
     public static final String EMPTY_STRING = "";
     public static final String FRAGMENT_IMAGES = "FRAGMENT_IMAGES";
+    public static final String FRAGMENT_SWIPE = "FRAGMENT_SWIPE";
     public static final String BASE_URL = "https://pixabay.com/";
 }
