@@ -30,12 +30,13 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
     private MutableLiveData networkState;
     private MutableLiveData initialLoading;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();;
-
-    public FeedDataSource(Repository appController) {
+    private String queryString;
+    public FeedDataSource(Repository appController, String queryString) {
         this.appController = appController;
 
         networkState = new MutableLiveData();
         initialLoading = new MutableLiveData();
+        this.queryString = queryString;
     }
 
 
@@ -53,7 +54,7 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
 
         initialLoading.postValue(NetworkState.LOADING);
         networkState.postValue(NetworkState.LOADING);
-        compositeDisposable.add(appController.getImages(API_KEY, "", 1,  params.requestedLoadSize)
+        compositeDisposable.add(appController.getImages(API_KEY, queryString, 1,  params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override
@@ -111,7 +112,7 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
         Log.i(TAG, "Loading Rang " + params.key + " Count " + params.requestedLoadSize);
 
         networkState.postValue(NetworkState.LOADING);
-        compositeDisposable.add(appController.getImages(API_KEY, "", params.key, params.requestedLoadSize)
+        compositeDisposable.add(appController.getImages(API_KEY, queryString, params.key, params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override

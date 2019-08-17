@@ -47,7 +47,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        viewModelFactory = new ViewModelFactory(new Repository());
+        viewModelFactory = new ViewModelFactory(new Repository(), "");
         //get ViewModel using ViewModelProviders and then tech data
         imagesListViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesListViewModel.class);
         if (savedInstanceState ==null) {
@@ -89,9 +89,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-               // mAdapter.clear();
-                //page = 1;
-                String username = query.toString();
+
                 replaceSubscription(query);
                 imagesListViewModel.getArticleLiveData();
                 searchView.clearFocus();

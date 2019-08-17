@@ -11,15 +11,17 @@ public class FeedDataFactory extends DataSource.Factory {
     private MutableLiveData<FeedDataSource> mutableLiveData;
     private FeedDataSource feedDataSource;
     private Repository repository;
+    private String queryString;
 
-    public FeedDataFactory(Repository repository) {
+    public FeedDataFactory(Repository repository, String queryString) {
         this.repository = repository;
         this.mutableLiveData = new MutableLiveData<FeedDataSource>();
+        this.queryString = queryString;
     }
 
     @Override
     public DataSource create() {
-        feedDataSource = new FeedDataSource(repository);
+        feedDataSource = new FeedDataSource(repository, queryString);
         mutableLiveData.postValue(feedDataSource);
         return feedDataSource;
     }

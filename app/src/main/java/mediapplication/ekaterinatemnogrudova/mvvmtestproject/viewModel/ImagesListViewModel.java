@@ -20,16 +20,17 @@ public class ImagesListViewModel extends ViewModel{
     private LiveData<PagedList<Item>> articleLiveData;
     FeedDataFactory feedDataFactory;
     private Repository mRepository;
-    private String query;
+    private String queryString;
 
-    public ImagesListViewModel(Repository repository){
+    public ImagesListViewModel(Repository repository, String queryString){
         mRepository = repository;
+        this.queryString = queryString;
         init();
     }
     private void init() {
         executor = Executors.newFixedThreadPool(5);
 
-        feedDataFactory = new FeedDataFactory(mRepository);
+        feedDataFactory = new FeedDataFactory(mRepository, queryString);
         networkState = Transformations.switchMap(feedDataFactory.getMutableLiveData(),
                 dataSource -> dataSource.getNetworkState());
 
@@ -58,8 +59,9 @@ public class ImagesListViewModel extends ViewModel{
         feedDataFactory.getFeedDataSource().clear();
     }
     public void replaceSubscription(LifecycleOwner lifecycleOwner, String query) {
-        this.query = query;
+        this.queryString = query;
         articleLiveData.removeObservers(lifecycleOwner);
         networkState.removeObservers(lifecycleOwner);
+        init();
     }
 }
