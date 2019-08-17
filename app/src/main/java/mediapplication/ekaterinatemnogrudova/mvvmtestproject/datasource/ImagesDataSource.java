@@ -21,9 +21,9 @@ import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Consta
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
 
 
-public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
+public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
 
-    private static final String TAG = FeedDataSource.class.getSimpleName();
+    private static final String TAG = ImagesDataSource.class.getSimpleName();
 
     private Repository appController;
 
@@ -31,7 +31,7 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
     private MutableLiveData initialLoading;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();;
     private String queryString;
-    public FeedDataSource(Repository appController, String queryString) {
+    public ImagesDataSource(Repository appController, String queryString) {
         this.appController = appController;
 
         networkState = new MutableLiveData();
@@ -67,14 +67,14 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
                             double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
                             Item item = new Item(it.getPreviewUrl(), imageRatio, it.getId());
                             list.add(item);
-                            rowRatios += item.imageRatio;
+                            rowRatios += item.getImageRatio();
                             if (rowRatios > 2f) {
                                 int used = 0;
                                 for (Item it2 : row) {
-                                    it2.columns = (int) ((COLUMNS * it2.imageRatio) / rowRatios);
-                                    used += it2.columns;
+                                    it2.setColumns((int) ((COLUMNS * it2.getImageRatio()) / rowRatios));
+                                    used += it2.getColumns();
                                 }
-                                item.columns = COLUMNS - used;
+                                item.setColumns(COLUMNS - used);
                                 row.clear();
                                 rowRatios = 0f;
                             } else {
@@ -125,14 +125,14 @@ public class FeedDataSource extends PageKeyedDataSource<Long, Item>{
                             double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
                             Item item = new Item(it.getPreviewUrl(), imageRatio, it.getId());
                             list.add(item);
-                            rowRatios += item.imageRatio;
+                            rowRatios += item.getImageRatio();
                             if (rowRatios > 2f) {
                                 int used = 0;
                                 for (Item it2 : row) {
-                                    it2.columns = (int) ((COLUMNS * it2.imageRatio) / rowRatios);
-                                    used += it2.columns;
+                                    it2.setColumns((int) ((COLUMNS * it2.getImageRatio()) / rowRatios));
+                                    used += it2.getColumns();
                                 }
-                                item.columns = COLUMNS - used;
+                                item.setColumns(COLUMNS - used);
                                 row.clear();
                                 rowRatios = 0f;
                             } else {

@@ -2,7 +2,6 @@ package mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
@@ -17,8 +16,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
  
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(ImagesListViewModel.class)) {
-            return (T) new ImagesListViewModel(repository, queryString);
+        if (modelClass.isAssignableFrom(ImagesGridViewModel.class)) {
+            return (T) new ImagesGridViewModel(repository, queryString);
         }
         throw new IllegalArgumentException("Wrong ViewModel class");
     }

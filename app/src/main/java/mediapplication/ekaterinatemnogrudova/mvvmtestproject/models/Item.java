@@ -4,13 +4,46 @@ import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 
 public class Item {
-    public int columns = 0;
-    public String url ;
-    public double imageRatio;
+    private int columns = 0;
+    private String url ;
+    private double imageRatio;
     private long id;
+
     public Item(String url, double imageRatio, long id) {
         this.url = url;
         this.imageRatio = imageRatio;
+        this.id = id;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public double getImageRatio() {
+        return imageRatio;
+    }
+
+    public void setImageRatio(double imageRatio) {
+        this.imageRatio = imageRatio;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
         this.id = id;
     }
 

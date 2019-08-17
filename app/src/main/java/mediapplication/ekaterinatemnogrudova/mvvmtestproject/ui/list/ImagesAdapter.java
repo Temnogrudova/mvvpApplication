@@ -1,15 +1,12 @@
 package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
 import android.arch.paging.PagedListAdapter;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.bumptech.glide.Glide;
-
 import jp.wasabeef.glide.transformations.CropTransformation;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.NetworkItemBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
@@ -17,78 +14,14 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FeedItemBinding;
 
 public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolder> {
-    /*
-    private ImageSelectedListener imageSelectedListener;
-    private final List<Item> data = new ArrayList<>();
-
-    ImagesAdapter(ImageSelectedListener imageSelectedListener) {
-        this.imageSelectedListener = imageSelectedListener;
-    }
-
-    @NonNull
-    @Override
-    public ImagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_feed, parent, false);
-        return new ImagesViewHolder(view, imageSelectedListener);
-    }
-
-    @Override
-    public void onBindViewHolder(ImagesViewHolder holder, int position) {
-        holder.bind(data.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
-
-    public void updateData(List<Item> imageList) {
-        data.addAll(imageList);
-        notifyDataSetChanged();
-    }
-
-    public int spanSizeLookup(int position) {
-        return  data.get(position).columns;
-    }
-
-    public void clear() {
-        data.clear();
-        notifyDataSetChanged();
-    }
-
-    static final class ImagesViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
-        private Item image;
-
-        ImagesViewHolder(View itemView, ImageSelectedListener imageSelectedListener) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.image);
-            itemView.setOnClickListener(v -> {
-                if(image != null) {
-                    imageSelectedListener.onImageSelected(image);
-                }
-            });
-        }
-
-        void bind(Item image) {
-            this.image = image;
-            Glide.with(imageView.getContext())
-                    .load(image.url).bitmapTransform(new CropTransformation(imageView.getContext()))
-                    .into(imageView);
-        }
-    }
-
-*/
-
     private static final int TYPE_PROGRESS = 0;
     private static final int TYPE_ITEM = 1;
+    private ImageSelectedListener imageSelectedListener;
 
-    private Context context;
     private NetworkState networkState;
-    public ImagesAdapter(Context context) {
+    public ImagesAdapter(ImageSelectedListener imageSelectedListener) {
         super(Item.DIFF_CALLBACK);
-        this.context = context;
+        this.imageSelectedListener = imageSelectedListener;
     }
 
     @NonNull
@@ -102,7 +35,7 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
 
         } else {
             FeedItemBinding itemBinding = FeedItemBinding.inflate(layoutInflater, parent, false);
-            ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(itemBinding);
+            ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(itemBinding, imageSelectedListener);
             return viewHolder;
         }
     }
@@ -117,7 +50,7 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
     }
 
     public int spanSizeLookup(int position) {
-        return  getItem(position).columns;
+        return  getItem(position).getColumns();
     }
     private boolean hasExtraRow() {
         if (networkState != null && networkState != NetworkState.LOADED) {
@@ -156,14 +89,22 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
     public class ArticleItemViewHolder extends RecyclerView.ViewHolder {
 
         private FeedItemBinding binding;
-        public ArticleItemViewHolder(FeedItemBinding binding) {
+        private Item item;
+
+        public ArticleItemViewHolder(FeedItemBinding binding, ImageSelectedListener imageSelectedListener) {
             super(binding.getRoot());
             this.binding = binding;
+            itemView.setOnClickListener(v -> {
+                if(item != null) {
+                    imageSelectedListener.onImageSelected(item);
+                }
+            });
         }
 
         public void bindTo(Item image) {
+            this.item = image;
             Glide.with(binding.image.getContext())
-                    .load(image.url).bitmapTransform(new CropTransformation(binding.image.getContext()))
+                    .load(image.getUrl()).bitmapTransform(new CropTransformation(binding.image.getContext()))
                     .into(binding.image);
         }
     }

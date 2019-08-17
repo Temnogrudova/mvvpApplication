@@ -9,20 +9,20 @@ import android.arch.paging.PagedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.datasource.factory.FeedDataFactory;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.datasource.factory.ImagesDataFactory;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 
-public class ImagesListViewModel extends ViewModel{
+public class ImagesGridViewModel extends ViewModel{
 
     private Executor executor;
     private LiveData<NetworkState> networkState;
     private LiveData<PagedList<Item>> articleLiveData;
-    FeedDataFactory feedDataFactory;
+    ImagesDataFactory imagesDataFactory;
     private Repository mRepository;
     private String queryString;
 
-    public ImagesListViewModel(Repository repository, String queryString){
+    public ImagesGridViewModel(Repository repository, String queryString){
         mRepository = repository;
         this.queryString = queryString;
         init();
@@ -30,8 +30,8 @@ public class ImagesListViewModel extends ViewModel{
     private void init() {
         executor = Executors.newFixedThreadPool(5);
 
-        feedDataFactory = new FeedDataFactory(mRepository, queryString);
-        networkState = Transformations.switchMap(feedDataFactory.getMutableLiveData(),
+        imagesDataFactory = new ImagesDataFactory(mRepository, queryString);
+        networkState = Transformations.switchMap(imagesDataFactory.getMutableLiveData(),
                 dataSource -> dataSource.getNetworkState());
 
         PagedList.Config pagedListConfig =
@@ -41,7 +41,7 @@ public class ImagesListViewModel extends ViewModel{
                         .setPageSize(10)
                         .build();
 
-        articleLiveData = (new LivePagedListBuilder(feedDataFactory, pagedListConfig))
+        articleLiveData = (new LivePagedListBuilder(imagesDataFactory, pagedListConfig))
                 .setFetchExecutor(executor)
                 .build();
     }
@@ -53,11 +53,13 @@ public class ImagesListViewModel extends ViewModel{
     public LiveData<PagedList<Item>> getArticleLiveData() {
         return articleLiveData;
     }
+
     @Override
     protected void onCleared() {
         super.onCleared();
-        feedDataFactory.getFeedDataSource().clear();
+        imagesDataFactory.getImagesDataSource().clear();
     }
+
     public void replaceSubscription(LifecycleOwner lifecycleOwner, String query) {
         this.queryString = query;
         articleLiveData.removeObservers(lifecycleOwner);
