@@ -5,9 +5,9 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.ImagesRespon
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.BASE_URL;
 
 public class Repository {
-    public static final String BASE_URL = "https://pixabay.com/";
     private Api api = null;
 
     public Repository() {
@@ -21,7 +21,7 @@ public class Repository {
         }
     }
 
-    public Observable<ImagesResponse> getImages(String apikey, String query, String page, String perPage) {
+    public Observable<ImagesResponse> getImages(String apikey, String query, long page, int perPage) {
         return  api.getImages(apikey, query, page, perPage);
     }
 }

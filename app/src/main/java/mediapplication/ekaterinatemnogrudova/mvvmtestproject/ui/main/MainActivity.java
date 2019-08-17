@@ -1,10 +1,10 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.main;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.main;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list.ImagesListFragment;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list.ImagesListFragment;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.FRAGMENT_IMAGES;
 
 public class MainActivity extends AppCompatActivity {

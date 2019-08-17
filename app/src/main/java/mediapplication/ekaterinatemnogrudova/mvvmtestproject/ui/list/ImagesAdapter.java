@@ -1,23 +1,16 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
 import android.arch.paging.PagedListAdapter;
 import android.content.Context;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+
 import com.bumptech.glide.Glide;
-import java.util.ArrayList;
-import java.util.List;
+
 import jp.wasabeef.glide.transformations.CropTransformation;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.NetworkItemBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;

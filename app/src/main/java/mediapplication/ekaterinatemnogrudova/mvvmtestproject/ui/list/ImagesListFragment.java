@@ -1,7 +1,8 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
-import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,11 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
-import java.util.List;
-
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ImagesListViewModel;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
@@ -33,8 +33,7 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
     SearchView searchView;
     private boolean isSubmitedClicked = false;
     GridLayoutManager layoutManager;
-    // private boolean isLoading = false;
-    //private int page = 1;
+    LifecycleOwner lifecycleOwner;
     public static ImagesListFragment newInstance() {
         return new ImagesListFragment();
     }
@@ -54,15 +53,10 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         if (savedInstanceState ==null) {
             imagesListViewModel.getArticleLiveData();
         }
+        lifecycleOwner = this;
         observableViewModel();
 
-        imagesList.setAdapter(mAdapter);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                return mAdapter.spanSizeLookup(i);
-            }
-        });
+
     }
 
     @Nullable
@@ -81,6 +75,13 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
         layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
         imagesList.setLayoutManager(layoutManager);
         mAdapter = new ImagesAdapter(getActivity());
+        imagesList.setAdapter(mAdapter);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int i) {
+                return mAdapter.spanSizeLookup(i);
+            }
+        });
     }
 
     private void initSearchViewListener() {
@@ -90,6 +91,8 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
             public boolean onQueryTextSubmit(String query) {
                // mAdapter.clear();
                 //page = 1;
+                String username = query.toString();
+                replaceSubscription(query);
                 imagesListViewModel.getArticleLiveData();
                 searchView.clearFocus();
                 isSubmitedClicked = true;
@@ -107,6 +110,10 @@ public class ImagesListFragment extends Fragment  implements ImageSelectedListen
                 return false;
             }
         });
+    }
+    private void replaceSubscription(String userName) {
+        imagesListViewModel.replaceSubscription(this, userName);
+        observableViewModel();
     }
 
     private void observableViewModel() {

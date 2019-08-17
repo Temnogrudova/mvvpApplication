@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list.ImagesListViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 

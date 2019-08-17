@@ -1,6 +1,5 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.view.list;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Image;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
 public interface ImageSelectedListener {

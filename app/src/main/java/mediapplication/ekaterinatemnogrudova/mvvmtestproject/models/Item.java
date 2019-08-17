@@ -7,10 +7,11 @@ public class Item {
     public int columns = 0;
     public String url ;
     public double imageRatio;
-    private String id;
-    public Item(String url, double imageRatio) {
+    private long id;
+    public Item(String url, double imageRatio, long id) {
         this.url = url;
         this.imageRatio = imageRatio;
+        this.id = id;
     }
 
     public static DiffUtil.ItemCallback<Item> DIFF_CALLBACK = new DiffUtil.ItemCallback<Item>() {
@@ -25,18 +26,12 @@ public class Item {
         }
     };
 
-
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (obj == this)
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Item other = (Item) obj;
-        if (!id.equals(other.id))
-            return false;
-        return true;
+
+        Item item = (Item) obj;
+        return item.id == this.id;
     }
 }
