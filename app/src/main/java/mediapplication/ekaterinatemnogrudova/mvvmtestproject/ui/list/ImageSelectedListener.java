@@ -4,5 +4,5 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 
 public interface ImageSelectedListener {
 
-    void onImageSelected(Item image);
+    void onImageSelected(Item image, int position);
 }

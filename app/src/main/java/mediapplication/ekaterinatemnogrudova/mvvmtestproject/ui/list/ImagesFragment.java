@@ -3,32 +3,32 @@ package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
-import android.widget.Toast;
-
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FragmentImagesBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.main.MainActivity;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ImagesGridViewModel;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.ViewModelFactory;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.EMPTY_STRING;
 
-public class ImagesGridFragment extends Fragment  implements ImageSelectedListener {
+public class ImagesFragment extends Fragment  implements ImageSelectedListener {
     private FragmentImagesBinding binder;
     private ImagesAdapter adapter;
     private ViewModelFactory viewModelFactory;
-    private ImagesGridViewModel imagesGridViewModel;
+    private ImagesViewModel imagesViewModel;
+    private String query = EMPTY_STRING;
+    private Constants.STATE currentState;
+    private int currentPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,28 +37,32 @@ public class ImagesGridFragment extends Fragment  implements ImageSelectedListen
         setRetainInstance(true);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        viewModelFactory = new ViewModelFactory(new Repository(), "");
-        //get ViewModel using ViewModelProviders and then tech data
-        imagesGridViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesGridViewModel.class);
-        if (savedInstanceState ==null) {
-            imagesGridViewModel.getArticleLiveData();
-        }
-        observableViewModel();
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binder = DataBindingUtil.inflate(inflater, R.layout.fragment_images, container, false);
-        initImagesList();
+        viewModelFactory = new ViewModelFactory(new Repository(), "");
+        //get ViewModel using ViewModelProviders and then tech data
+        imagesViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
+        imagesViewModel.getArticleLiveData();
+        if (currentState == Constants.STATE.LIST)
+        {
+            iniImagesList();
+        }
+        else
+        {
+            initImagesGrid();
+
+        }
+        //observableViewModel();
         initSearchViewListener();
         return binder.getRoot();
     }
 
-    private void initImagesList() {
+    private void initImagesGrid() {
+        currentState = Constants.STATE.GRID;
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
         binder.imagesList.setLayoutManager(layoutManager);
         adapter = new ImagesAdapter(this);
@@ -69,15 +73,37 @@ public class ImagesGridFragment extends Fragment  implements ImageSelectedListen
                 return adapter.spanSizeLookup(i);
             }
         });
-    }
+        replaceSubscription(query);
 
+    }
+    private void iniImagesList() {
+        currentState = Constants.STATE.LIST;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+
+        binder.imagesList.setLayoutManager(layoutManager);
+        adapter = new ImagesAdapter(this);
+        binder.imagesList.setAdapter(adapter);
+        replaceSubscription(query);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                if (positionStart == 0) {
+                    layoutManager.scrollToPosition(currentPosition);
+                }
+            }
+        });
+
+
+    }
     private void initSearchViewListener() {
         binder.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String queryString) {
+                query = queryString;
                 replaceSubscription(query);
-                imagesGridViewModel.getArticleLiveData();
+                imagesViewModel.getArticleLiveData();
                 binder.searchView.clearFocus();
                 return false;
             }
@@ -95,21 +121,33 @@ public class ImagesGridFragment extends Fragment  implements ImageSelectedListen
     }
 
     private void replaceSubscription(String query) {
-        imagesGridViewModel.replaceSubscription(this, query);
+        imagesViewModel.replaceSubscription(this, query);
         observableViewModel();
     }
 
     private void observableViewModel() {
-        imagesGridViewModel.getArticleLiveData().observe(this, pagedList -> {
+        imagesViewModel.getArticleLiveData().observe(this, pagedList -> {
             adapter.submitList(pagedList);
         });
-        imagesGridViewModel.getNetworkState().observe(this, networkState -> {
+        imagesViewModel.getNetworkState().observe(this, networkState -> {
             adapter.setNetworkState(networkState);
         });
     }
-
     @Override
-    public void onImageSelected(Item image) {
-        ((MainActivity) getActivity()).showSwipeFragment();
+    public void onImageSelected(Item item, int position) {
+        currentPosition = position;
+        iniImagesList();
+    }
+
+    public void backPressed() {
+        if (currentState == Constants.STATE.LIST)
+        {
+            initImagesGrid();
+            replaceSubscription(query);
+        }
+        else
+        {
+            getActivity().finish();
+        }
     }
 }

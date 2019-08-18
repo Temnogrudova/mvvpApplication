@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import jp.wasabeef.glide.transformations.CropTransformation;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.NetworkItemBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
@@ -17,8 +18,8 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
     private static final int TYPE_PROGRESS = 0;
     private static final int TYPE_ITEM = 1;
     private ImageSelectedListener imageSelectedListener;
-
     private NetworkState networkState;
+
     public ImagesAdapter(ImageSelectedListener imageSelectedListener) {
         super(Item.DIFF_CALLBACK);
         this.imageSelectedListener = imageSelectedListener;
@@ -39,14 +40,14 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
             return viewHolder;
         }
     }
-
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ArticleItemViewHolder) {
-            ((ArticleItemViewHolder)holder).bindTo(getItem(position));
+            ((ArticleItemViewHolder)holder).bindTo(getItem(position), position);
         } else {
             ((NetworkStateItemViewHolder) holder).bindView(networkState);
         }
+
     }
 
     public int spanSizeLookup(int position) {
@@ -90,21 +91,24 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
 
         private FeedItemBinding binding;
         private Item item;
+        private int position;
 
         public ArticleItemViewHolder(FeedItemBinding binding, ImageSelectedListener imageSelectedListener) {
             super(binding.getRoot());
             this.binding = binding;
             itemView.setOnClickListener(v -> {
                 if(item != null) {
-                    imageSelectedListener.onImageSelected(item);
+                    imageSelectedListener.onImageSelected(item, position);
                 }
             });
         }
 
-        public void bindTo(Item image) {
+        public void bindTo(Item image, int position) {
+            this.position = position;
             this.item = image;
             Glide.with(binding.image.getContext())
                     .load(image.getUrl()).bitmapTransform(new CropTransformation(binding.image.getContext()))
+                    .placeholder(R.drawable.no_image)
                     .into(binding.image);
         }
     }

@@ -1,9 +1,11 @@
 package mediapplication.ekaterinatemnogrudova.mvvmtestproject.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 
-public class Item {
+public class Item  implements Parcelable {
     private int columns = 0;
     private String url ;
     private double imageRatio;
@@ -67,4 +69,34 @@ public class Item {
         Item item = (Item) obj;
         return item.id == this.id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    protected Item(Parcel in) {
+        columns = in.readInt();
+        imageRatio = in.readDouble();
+        id = in.readLong();
+        url = in.readString();
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(url);
+        dest.writeDouble(imageRatio);
+        dest.writeInt(columns);
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 }

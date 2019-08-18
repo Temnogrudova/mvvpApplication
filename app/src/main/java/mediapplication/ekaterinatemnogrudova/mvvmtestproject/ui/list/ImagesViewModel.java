@@ -1,7 +1,8 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.paging.LivePagedListBuilder;
@@ -13,7 +14,9 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.datasource.factory.
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 
-public class ImagesGridViewModel extends ViewModel{
+import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.DEFAULT_PER_PAGES;
+
+public class ImagesViewModel extends ViewModel{
 
     private Executor executor;
     private LiveData<NetworkState> networkState;
@@ -22,7 +25,7 @@ public class ImagesGridViewModel extends ViewModel{
     private Repository mRepository;
     private String queryString;
 
-    public ImagesGridViewModel(Repository repository, String queryString){
+    public ImagesViewModel(Repository repository, String queryString){
         mRepository = repository;
         this.queryString = queryString;
         init();
@@ -37,8 +40,8 @@ public class ImagesGridViewModel extends ViewModel{
         PagedList.Config pagedListConfig =
                 (new PagedList.Config.Builder())
                         .setEnablePlaceholders(false)
-                        .setInitialLoadSizeHint(10)
-                        .setPageSize(10)
+                        .setInitialLoadSizeHint(DEFAULT_PER_PAGES)
+                        .setPageSize(DEFAULT_PER_PAGES)
                         .build();
 
         articleLiveData = (new LivePagedListBuilder(imagesDataFactory, pagedListConfig))

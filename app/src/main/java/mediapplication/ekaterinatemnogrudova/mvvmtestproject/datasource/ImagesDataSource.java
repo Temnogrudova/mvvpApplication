@@ -31,6 +31,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
     private MutableLiveData initialLoading;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();;
     private String queryString;
+
     public ImagesDataSource(Repository appController, String queryString) {
         this.appController = appController;
 
