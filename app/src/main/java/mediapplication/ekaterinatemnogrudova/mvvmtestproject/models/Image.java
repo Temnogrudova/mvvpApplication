@@ -11,6 +11,8 @@ public class Image {
     private int webformatHeight;
     @SerializedName("webformatWidth")
     private int webformatWidth;
+    @SerializedName("largeImageURL")
+    private String largeImageURL;
 
     public String getPreviewUrl() {
         return previewURL;
@@ -44,6 +46,13 @@ public class Image {
         this.webformatWidth = webformatWidth;
     }
 
+    public String getLargeImageURL() {
+        return largeImageURL;
+    }
+
+    public void setLargeImageURL(String largeImageURL) {
+        this.largeImageURL = largeImageURL;
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj == this)

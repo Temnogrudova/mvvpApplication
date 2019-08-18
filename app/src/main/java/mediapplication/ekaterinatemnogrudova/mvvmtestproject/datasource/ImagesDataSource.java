@@ -66,7 +66,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
                         List<Image> il = response.getHits();
                         for (Image it : il) {
                             double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
-                            Item item = new Item(it.getPreviewUrl(), imageRatio, it.getId());
+                            Item item = new Item(it.getPreviewUrl(), it.getLargeImageURL(), imageRatio, it.getId());
                             list.add(item);
                             rowRatios += item.getImageRatio();
                             if (rowRatios > 2f) {
@@ -124,7 +124,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
                         List<Image> il = response.getHits();
                         for (Image it : il) {
                             double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
-                            Item item = new Item(it.getPreviewUrl(), imageRatio, it.getId());
+                            Item item = new Item(it.getPreviewUrl(), it.getLargeImageURL(), imageRatio, it.getId());
                             list.add(item);
                             rowRatios += item.getImageRatio();
                             if (rowRatios > 2f) {

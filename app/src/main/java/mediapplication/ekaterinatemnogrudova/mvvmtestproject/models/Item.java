@@ -7,12 +7,14 @@ import android.support.v7.util.DiffUtil;
 
 public class Item  implements Parcelable {
     private int columns = 0;
-    private String url ;
+    private String previewUrl;
+    private String imageUrl;
     private double imageRatio;
     private long id;
 
-    public Item(String url, double imageRatio, long id) {
-        this.url = url;
+    public Item(String previewUrl, String imageUrl, double imageRatio, long id) {
+        this.previewUrl = previewUrl;
+        this.imageUrl = imageUrl;
         this.imageRatio = imageRatio;
         this.id = id;
     }
@@ -25,12 +27,20 @@ public class Item  implements Parcelable {
         this.columns = columns;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPreviewUrl() {
+        return previewUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public double getImageRatio() {
@@ -78,12 +88,14 @@ public class Item  implements Parcelable {
         columns = in.readInt();
         imageRatio = in.readDouble();
         id = in.readLong();
-        url = in.readString();
+        previewUrl = in.readString();
+        imageUrl = in.readString();
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
-        dest.writeString(url);
+        dest.writeString(previewUrl);
+        dest.writeString(imageUrl);
         dest.writeDouble(imageRatio);
         dest.writeInt(columns);
     }

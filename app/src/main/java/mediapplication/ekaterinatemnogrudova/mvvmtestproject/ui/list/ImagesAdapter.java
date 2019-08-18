@@ -1,29 +1,35 @@
 package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
 import android.arch.paging.PagedListAdapter;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
+
 import jp.wasabeef.glide.transformations.CropTransformation;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.NetworkItemBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FeedItemBinding;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.ImageItemBinding;
 
 public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolder> {
     private static final int TYPE_PROGRESS = 0;
     private static final int TYPE_ITEM = 1;
     private ImageSelectedListener imageSelectedListener;
     private NetworkState networkState;
+    private Constants.STATE currentState;
 
-    public ImagesAdapter(ImageSelectedListener imageSelectedListener) {
+    public ImagesAdapter(Constants.STATE currentState, ImageSelectedListener imageSelectedListener) {
         super(Item.DIFF_CALLBACK);
         this.imageSelectedListener = imageSelectedListener;
+        this.currentState = currentState;
     }
+
 
     @NonNull
     @Override
@@ -35,15 +41,15 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
             return viewHolder;
 
         } else {
-            FeedItemBinding itemBinding = FeedItemBinding.inflate(layoutInflater, parent, false);
-            ArticleItemViewHolder viewHolder = new ArticleItemViewHolder(itemBinding, imageSelectedListener);
+            ImageItemBinding itemBinding = ImageItemBinding.inflate(layoutInflater, parent, false);
+            ImageItemViewHolder viewHolder = new ImageItemViewHolder(itemBinding, imageSelectedListener);
             return viewHolder;
         }
     }
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof ArticleItemViewHolder) {
-            ((ArticleItemViewHolder)holder).bindTo(getItem(position), position);
+        if(holder instanceof ImageItemViewHolder) {
+            ((ImageItemViewHolder)holder).bindTo(getItem(position), position);
         } else {
             ((NetworkStateItemViewHolder) holder).bindView(networkState);
         }
@@ -87,15 +93,34 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
     }
 
 
-    public class ArticleItemViewHolder extends RecyclerView.ViewHolder {
+    public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
-        private FeedItemBinding binding;
+        private ImageItemBinding binding;
         private Item item;
         private int position;
 
-        public ArticleItemViewHolder(FeedItemBinding binding, ImageSelectedListener imageSelectedListener) {
+        public ImageItemViewHolder(ImageItemBinding binding, ImageSelectedListener imageSelectedListener) {
             super(binding.getRoot());
             this.binding = binding;
+            ViewGroup.LayoutParams params = binding.image.getLayoutParams();
+            if (currentState == Constants.STATE.LIST)
+            {
+                params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                binding.image.setLayoutParams(params);
+            }
+            else
+            {
+                if (binding.getRoot().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    binding.image.getLayoutParams().height = 450;
+                }
+                else
+                {
+                    binding.image.getLayoutParams().height = 550;
+
+                }
+                binding.image.setLayoutParams(params);
+            }
             itemView.setOnClickListener(v -> {
                 if(item != null) {
                     imageSelectedListener.onImageSelected(item, position);
@@ -106,10 +131,19 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
         public void bindTo(Item image, int position) {
             this.position = position;
             this.item = image;
-            Glide.with(binding.image.getContext())
-                    .load(image.getUrl()).bitmapTransform(new CropTransformation(binding.image.getContext()))
-                    .placeholder(R.drawable.no_image)
-                    .into(binding.image);
+            if (currentState == Constants.STATE.LIST) {
+                Glide.with(binding.image.getContext())
+                        .load(image.getImageUrl())
+                        .placeholder(R.drawable.no_image)
+                        .into(binding.image);
+            }
+            else
+            {
+                Glide.with(binding.image.getContext())
+                        .load(image.getPreviewUrl())
+                        .placeholder(R.drawable.no_image)
+                        .into(binding.image);
+            }
         }
     }
 

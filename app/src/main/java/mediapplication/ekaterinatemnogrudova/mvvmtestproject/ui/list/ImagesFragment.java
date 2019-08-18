@@ -56,7 +56,6 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
             initImagesGrid();
 
         }
-        //observableViewModel();
         initSearchViewListener();
         return binder.getRoot();
     }
@@ -65,7 +64,7 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         currentState = Constants.STATE.GRID;
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
         binder.imagesList.setLayoutManager(layoutManager);
-        adapter = new ImagesAdapter(this);
+        adapter = new ImagesAdapter(currentState, this);
         binder.imagesList.setAdapter(adapter);
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -79,9 +78,8 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
     private void iniImagesList() {
         currentState = Constants.STATE.LIST;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-
         binder.imagesList.setLayoutManager(layoutManager);
-        adapter = new ImagesAdapter(this);
+        adapter = new ImagesAdapter(currentState, this);
         binder.imagesList.setAdapter(adapter);
         replaceSubscription(query);
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -93,9 +91,8 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
                 }
             }
         });
-
-
     }
+
     private void initSearchViewListener() {
         binder.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -110,7 +107,7 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(binder.searchView.getWidth() > 0  && newText.length() == 0)
+                if(binder.searchView.getWidth() > 0 && newText.length() == 0)
                 {
                     this.onQueryTextSubmit(EMPTY_STRING);
                     return false;
@@ -136,7 +133,13 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
     @Override
     public void onImageSelected(Item item, int position) {
         currentPosition = position;
-        iniImagesList();
+        if (currentState == Constants.STATE.LIST)
+        {
+
+        }
+        else {
+            iniImagesList();
+        }
     }
 
     public void backPressed() {
