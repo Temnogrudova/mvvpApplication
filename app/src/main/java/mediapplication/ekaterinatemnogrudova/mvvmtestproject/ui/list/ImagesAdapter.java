@@ -43,7 +43,6 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
         this.context = context;
     }
 
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -112,6 +111,23 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
         public ImageItemViewHolder(ImageItemBinding binding, ImageSelectedListener imageSelectedListener) {
             super(binding.getRoot());
             this.binding = binding;
+            setImageParams();
+            binding.image.setOnClickListener(v -> {
+                if(item != null) {
+                    if (currentState == Constants.STATE.LIST) {
+                           shareImage();
+                        }
+                    else
+                    {
+                        imageSelectedListener.onImageSelected(item, position);
+
+                    }
+                }
+            });
+
+        }
+
+        private void setImageParams(){
             ViewGroup.LayoutParams params = binding.image.getLayoutParams();
             if (currentState == Constants.STATE.LIST)
             {
@@ -132,23 +148,9 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
                 }
                 binding.image.setLayoutParams(params);
             }
-            binding.image.setOnClickListener(v -> {
-                if(item != null) {
-                    if (currentState == Constants.STATE.LIST) {
-                           shareImage();
-                        }
-                    else
-                    {
-                        imageSelectedListener.onImageSelected(item, position);
-
-                    }
-                }
-            });
-
         }
 
-
-        public void shareImage(){
+        private void shareImage(){
             Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.action_share_message, Snackbar.LENGTH_SHORT);
             TextView textView = snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
             textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_share, 0, 0);

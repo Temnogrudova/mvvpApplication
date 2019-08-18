@@ -10,7 +10,6 @@ import android.util.Log;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list.ImagesFragment;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.PermissionUtil;
-
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.FRAGMENT_IMAGES;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.MY_PERMISSIONS_REQUEST_WRITE_STORAGE;
 
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void showImagesFragment() {
         ImagesFragment imagesFragment = new ImagesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(FRAGMENT_IMAGES);
         fragmentTransaction.commitAllowingStateLoss();
     }
-
 
     @Override
     public void onBackPressed() {

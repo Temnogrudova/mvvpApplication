@@ -23,7 +23,6 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.SharedPreference;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ViewModelFactory;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ImagesViewModel;
-
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.EMPTY_STRING;
 
@@ -41,13 +40,14 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binder = DataBindingUtil.inflate(inflater, R.layout.fragment_images, container, false);
         sharedPreference = new SharedPreference();
-        viewModelFactory = new ViewModelFactory(new Repository(), "");
+        viewModelFactory = new ViewModelFactory(new Repository(), EMPTY_STRING);
         imagesViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
         binder.searchView.setQuery(sharedPreference.getQuery(getActivity()),false);
         if (currentState == Constants.STATE.LIST) {
@@ -75,6 +75,7 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         replaceSubscription(sharedPreference.getQuery(getActivity()));
 
     }
+
     private void iniImagesList() {
         binder.searchView.setVisibility(View.GONE);
         currentState = Constants.STATE.LIST;
@@ -101,7 +102,6 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
             public boolean onQueryTextSubmit(String query) {
                 sharedPreference.saveQuery(getActivity(), query);
                 replaceSubscription(query);
-                imagesViewModel.getArticleLiveData();
                 binder.searchView.clearFocus();
                 return false;
             }
@@ -141,9 +141,9 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
 
             }
             adapter.setNetworkState(networkState);
-
         });
     }
+
     @Override
     public void onImageSelected(Item item, int position) {
         currentPosition = position;
