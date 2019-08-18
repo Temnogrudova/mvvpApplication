@@ -6,41 +6,29 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import com.bumptech.glide.request.target.Target;
 import java.io.IOException;
 import java.net.URL;
-
-import jp.wasabeef.glide.transformations.CropTransformation;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.NetworkItemBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.main.MainActivity;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.BitmapUtil;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.ImageItemBinding;
 
 public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolder> {
+
     private static final int TYPE_PROGRESS = 0;
     private static final int TYPE_ITEM = 1;
     private ImageSelectedListener imageSelectedListener;
@@ -78,7 +66,6 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
         } else {
             ((NetworkStateItemViewHolder) holder).bindView(networkState);
         }
-
     }
 
     public int spanSizeLookup(int position) {
@@ -117,13 +104,11 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
         }
     }
 
-
     public class ImageItemViewHolder extends RecyclerView.ViewHolder {
 
         private ImageItemBinding binding;
         private Item item;
         private int position;
-
         public ImageItemViewHolder(ImageItemBinding binding, ImageSelectedListener imageSelectedListener) {
             super(binding.getRoot());
             this.binding = binding;
@@ -131,17 +116,18 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
             if (currentState == Constants.STATE.LIST)
             {
                 params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
                 binding.image.setLayoutParams(params);
             }
             else
             {
+                params.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 if (binding.getRoot().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    binding.image.getLayoutParams().height = 450;
+                    binding.image.getLayoutParams().height = context.getResources().getDimensionPixelSize(R.dimen.image_vertical_height);
                 }
                 else
                 {
-                    binding.image.getLayoutParams().height = 550;
+                    binding.image.getLayoutParams().height = context.getResources().getDimensionPixelSize(R.dimen.image_horizontal_height);
 
                 }
                 binding.image.setLayoutParams(params);
@@ -149,27 +135,7 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
             binding.image.setOnClickListener(v -> {
                 if(item != null) {
                     if (currentState == Constants.STATE.LIST) {
-                            Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.action_share_message, Snackbar.LENGTH_SHORT);
-                            TextView textView = snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
-                            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_share, 0, 0);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                            } else {
-                                textView.setGravity(Gravity.CENTER_HORIZONTAL);
-                            }
-                            textView.setOnClickListener(v1 -> {
-                                try {
-                                    URL url = new URL(item.getImageUrl());
-                                    Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                                    Intent i = new Intent(Intent.ACTION_SEND);
-                                    i.setType("image/*");
-                                    i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(image));
-                                    context.startActivity(Intent.createChooser(i, "Share Image"));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                            snackbar.show();
+                           shareImage();
                         }
                     else
                     {
@@ -178,30 +144,51 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
                     }
                 }
             });
+
         }
 
 
-        public Uri getLocalBitmapUri(Bitmap bmp) {
-            Uri bmpUri = null;
-            try {
-                File file =  new File(Environment.getExternalStorageDirectory(), "share_image_" + System.currentTimeMillis() + ".png");
-                FileOutputStream out = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-                out.close();
-                bmpUri = Uri.fromFile(file);
-            } catch (IOException e) {
-                e.printStackTrace();
+        public void shareImage(){
+            Snackbar snackbar = Snackbar.make(binding.getRoot(), R.string.action_share_message, Snackbar.LENGTH_SHORT);
+            TextView textView = snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_share, 0, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            } else {
+                textView.setGravity(Gravity.CENTER_HORIZONTAL);
             }
-            return bmpUri;
+            textView.setOnClickListener(v1 -> {
+                try {
+                    URL url = new URL(item.getImageUrl());
+                    Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("image/*");
+                    i.putExtra(Intent.EXTRA_STREAM, BitmapUtil.getLocalBitmapUri(image));
+                    context.startActivity(Intent.createChooser(i, "Share Image"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            snackbar.show();
         }
+
         public void bindTo(Item image, int position) {
             this.position = position;
             this.item = image;
-            String url = (currentState == Constants.STATE.LIST)?image.getImageUrl():image.getPreviewUrl();
-            Glide.with(binding.image.getContext())
-                        .load(url)
+            if (currentState == Constants.STATE.LIST){
+                Glide.with(binding.image.getContext())
+                        .load(image.getImageUrl())
+                        .placeholder(R.drawable.ic_no_image)
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+
+                        .into(binding.image);
+            }
+            else {
+                Glide.with(binding.image.getContext())
+                        .load(image.getPreviewUrl())
                         .placeholder(R.drawable.ic_no_image)
                         .into(binding.image);
+            }
         }
     }
 

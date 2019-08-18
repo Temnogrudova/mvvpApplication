@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
-
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FragmentImagesBinding;
@@ -34,18 +33,14 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
     private ViewModelFactory viewModelFactory;
     private ImagesViewModel imagesViewModel;
     private SharedPreference sharedPreference;
-
-    //private String query = EMPTY_STRING;
     private Constants.STATE currentState;
     private int currentPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Retain this Fragment across configuration changes.
         setRetainInstance(true);
     }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -53,18 +48,12 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         binder = DataBindingUtil.inflate(inflater, R.layout.fragment_images, container, false);
         sharedPreference = new SharedPreference();
         viewModelFactory = new ViewModelFactory(new Repository(), "");
-        //get ViewModel using ViewModelProviders and then tech data
         imagesViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
-        imagesViewModel.getArticleLiveData();
         binder.searchView.setQuery(sharedPreference.getQuery(getActivity()),false);
-        if (currentState == Constants.STATE.LIST)
-        {
+        if (currentState == Constants.STATE.LIST) {
             iniImagesList();
-        }
-        else
-        {
+        } else {
             initImagesGrid();
-
         }
         initSearchViewListener();
         return binder.getRoot();

@@ -4,10 +4,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
@@ -30,14 +28,14 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
     private MutableLiveData networkState;
     private MutableLiveData initialLoading;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();;
-    private String queryString;
+    private String query;
 
-    public ImagesDataSource(Repository appController, String queryString) {
+    public ImagesDataSource(Repository appController, String query) {
         this.appController = appController;
 
         networkState = new MutableLiveData();
         initialLoading = new MutableLiveData();
-        this.queryString = queryString;
+        this.query = query;
     }
 
 
@@ -55,7 +53,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
 
         initialLoading.postValue(NetworkState.LOADING);
         networkState.postValue(NetworkState.LOADING);
-        compositeDisposable.add(appController.getImages(API_KEY, queryString, 1,  params.requestedLoadSize)
+        compositeDisposable.add(appController.getImages(API_KEY, query, 1,  params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override
@@ -92,7 +90,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
         Log.i(TAG, "Loading Rang " + params.key + " Count " + params.requestedLoadSize);
 
         networkState.postValue(NetworkState.LOADING);
-        compositeDisposable.add(appController.getImages(API_KEY, queryString, params.key, params.requestedLoadSize)
+        compositeDisposable.add(appController.getImages(API_KEY, query, params.key, params.requestedLoadSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override
