@@ -123,7 +123,14 @@ public class ImagesAdapter extends PagedListAdapter<Item, RecyclerView.ViewHolde
             }
             itemView.setOnClickListener(v -> {
                 if(item != null) {
-                    imageSelectedListener.onImageSelected(item, position);
+                    if (currentState == Constants.STATE.LIST) {
+                        imageSelectedListener.onImageSelected(item, position);
+                    }
+                    else
+                    {
+                        imageSelectedListener.onImageSelected(item, position);
+
+                    }
                 }
             });
         }
