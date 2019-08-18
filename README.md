@@ -18,4 +18,4 @@ Displaying the image on full screen with option to swipe left and right to the n
 Share image from gallery
 Error handling with providing actions to user
 
-[alt text](https://drive.google.com/file/d/1FP7nUzRGluhggr9MHxDsrC5YAIzQpjM9/view?usp=sharing)
+[alt text](https://github.com/Temnogrudova/mvvpApplication/blob/master/screens/Screen1.jpg)
