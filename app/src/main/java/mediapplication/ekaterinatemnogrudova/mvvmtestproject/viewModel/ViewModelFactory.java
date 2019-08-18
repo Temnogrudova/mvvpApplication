@@ -1,9 +1,8 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
-import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list.ImagesViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 

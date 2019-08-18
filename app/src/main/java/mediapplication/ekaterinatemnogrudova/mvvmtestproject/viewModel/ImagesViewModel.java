@@ -1,8 +1,7 @@
-package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
+package mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.paging.LivePagedListBuilder;
@@ -13,7 +12,6 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.datasource.factory.ImagesDataFactory;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
-
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.DEFAULT_PER_PAGES;
 
 public class ImagesViewModel extends ViewModel{

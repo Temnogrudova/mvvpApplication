@@ -60,28 +60,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override
                     public void onNext(ImagesResponse response) {
-                        ArrayList<Item> list = new ArrayList<Item>();
-                        ArrayList<Item> row = new ArrayList<Item>();
-                        double rowRatios = 0f;
-                        List<Image> il = response.getHits();
-                        for (Image it : il) {
-                            double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
-                            Item item = new Item(it.getPreviewUrl(), it.getLargeImageURL(), imageRatio, it.getId());
-                            list.add(item);
-                            rowRatios += item.getImageRatio();
-                            if (rowRatios > 2f) {
-                                int used = 0;
-                                for (Item it2 : row) {
-                                    it2.setColumns((int) ((COLUMNS * it2.getImageRatio()) / rowRatios));
-                                    used += it2.getColumns();
-                                }
-                                item.setColumns(COLUMNS - used);
-                                row.clear();
-                                rowRatios = 0f;
-                            } else {
-                                row.add(item);
-                            }
-                        }
+                        ArrayList<Item> list = generateListItems(response);
                         callback.onResult(list, null, 2l);
                         initialLoading.postValue(NetworkState.LOADED);
                         networkState.postValue(NetworkState.LOADED);
@@ -118,28 +97,7 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
                 .observeOn(AndroidSchedulers.mainThread()).subscribeWith(new DisposableObserver<ImagesResponse>() {
                     @Override
                     public void onNext(ImagesResponse response) {
-                        ArrayList<Item> list = new ArrayList<Item>();
-                        ArrayList<Item> row = new ArrayList<Item>();
-                        double rowRatios = 0f;
-                        List<Image> il = response.getHits();
-                        for (Image it : il) {
-                            double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
-                            Item item = new Item(it.getPreviewUrl(), it.getLargeImageURL(), imageRatio, it.getId());
-                            list.add(item);
-                            rowRatios += item.getImageRatio();
-                            if (rowRatios > 2f) {
-                                int used = 0;
-                                for (Item it2 : row) {
-                                    it2.setColumns((int) ((COLUMNS * it2.getImageRatio()) / rowRatios));
-                                    used += it2.getColumns();
-                                }
-                                item.setColumns(COLUMNS - used);
-                                row.clear();
-                                rowRatios = 0f;
-                            } else {
-                                row.add(item);
-                            }
-                        }
+                        ArrayList<Item> list = generateListItems(response);
                         long nextKey = (params.key == response.getTotalHits()) ? null : params.key+1;
                         callback.onResult(list, nextKey);
                         networkState.postValue(NetworkState.LOADED);
@@ -156,6 +114,33 @@ public class ImagesDataSource extends PageKeyedDataSource<Long, Item>{
                     }
 
                 }));
+    }
+
+    @NonNull
+    private ArrayList<Item> generateListItems(ImagesResponse response) {
+        ArrayList<Item> list = new ArrayList<Item>();
+        ArrayList<Item> row = new ArrayList<Item>();
+        double rowRatios = 0f;
+        List<Image> il = response.getHits();
+        for (Image it : il) {
+            double imageRatio = (double) it.getWebformatWidth() / (double) it.getWebformatHeight();
+            Item item = new Item(it.getPreviewUrl(), it.getLargeImageURL(), imageRatio, it.getId());
+            list.add(item);
+            rowRatios += item.getImageRatio();
+            if (rowRatios > 2f) {
+                int used = 0;
+                for (Item it2 : row) {
+                    it2.setColumns((int) ((COLUMNS * it2.getImageRatio()) / rowRatios));
+                    used += it2.getColumns();
+                }
+                item.setColumns(COLUMNS - used);
+                row.clear();
+                rowRatios = 0f;
+            } else {
+                row.add(item);
+            }
+        }
+        return list;
     }
 
     public void clear() {

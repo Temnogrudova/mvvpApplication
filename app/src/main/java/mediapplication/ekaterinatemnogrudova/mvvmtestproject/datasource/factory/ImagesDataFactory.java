@@ -25,7 +25,6 @@ public class ImagesDataFactory extends DataSource.Factory {
         return imagesDataSource;
     }
 
-
     public MutableLiveData<ImagesDataSource> getMutableLiveData() {
         return mutableLiveData;
     }

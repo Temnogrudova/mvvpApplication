@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">MvvmTestProject</string>
     <string name="search_view_hint">Search</string>
+    <string name="error_message">Something went wrong&#8230;</string>
+    <string name="error_action_refresh">Refresh</string>
+    <string name="action_share_message">Share</string>
+
 </resources>
