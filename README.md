@@ -1,15 +1,16 @@
-GalleryAppSample
+#GalleryAppSample
 
 GalleryAppSample is a demonstration app written in Kotlin
 
-Used technologies:
+##Used technologies:
 
 JAVA
 RxJava
 Android Architecture components: ViewModel, Paging, Livedata
 Retrofit
 Data Binding
-Features:
+
+##Features:
 
 Showing gallery of pictures with considering of theirs aspect ratio
 Search
