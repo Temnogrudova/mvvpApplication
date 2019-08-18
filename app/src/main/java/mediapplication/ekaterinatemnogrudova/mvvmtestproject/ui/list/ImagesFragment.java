@@ -1,5 +1,6 @@
 package mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.list;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,10 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.R;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.api.Repository;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.databinding.FragmentImagesBinding;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.models.Item;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.screenFactory.GridScreen;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.screenFactory.ListScreen;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.screenFactory.Screen;
+import mediapplication.ekaterinatemnogrudova.mvvmtestproject.ui.screenFactory.ScreenFactory;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.NetworkState;
 import mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.SharedPreference;
@@ -26,15 +32,13 @@ import mediapplication.ekaterinatemnogrudova.mvvmtestproject.viewModel.ImagesVie
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.COLUMNS;
 import static mediapplication.ekaterinatemnogrudova.mvvmtestproject.utils.Constants.EMPTY_STRING;
 
-public class ImagesFragment extends Fragment  implements ImageSelectedListener {
+public class ImagesFragment extends Fragment {
     private FragmentImagesBinding binder;
-    private ImagesAdapter adapter;
     private ViewModelFactory viewModelFactory;
     private ImagesViewModel imagesViewModel;
     private SharedPreference sharedPreference;
-    private Constants.STATE currentState;
-    private int currentPosition;
-
+    private ScreenFactory screenFactory = new ScreenFactory();
+    private ImagesAdapter adapter;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,49 +54,35 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         viewModelFactory = new ViewModelFactory(new Repository(), EMPTY_STRING);
         imagesViewModel = ViewModelProviders.of(this, viewModelFactory).get(ImagesViewModel.class);
         binder.searchView.setQuery(sharedPreference.getQuery(getActivity()),false);
-        if (currentState == Constants.STATE.LIST) {
-            iniImagesList();
+        if (screenFactory.getCurrentState() == Constants.STATE.LIST) {
+            openListScreen();
         } else {
-            initImagesGrid();
+            openGridScreen();
         }
         initSearchViewListener();
         return binder.getRoot();
     }
 
-    private void initImagesGrid() {
-        binder.searchView.setVisibility(View.VISIBLE);
-        currentState = Constants.STATE.GRID;
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COLUMNS);
-        binder.imagesList.setLayoutManager(layoutManager);
-        adapter = new ImagesAdapter(getActivity(), currentState, this);
-        binder.imagesList.setAdapter(adapter);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int i) {
-                return adapter.spanSizeLookup(i);
-            }
-        });
-        replaceSubscription(sharedPreference.getQuery(getActivity()));
-
+    private void openListScreen() {
+        Screen listScreen = screenFactory.getScreen(Constants.STATE.LIST,
+                screenFactory.getCurrentPosition(),
+                imagesViewModel,
+                binder,
+                adapter,
+                getActivity(),
+                screenFactory);
+        listScreen.draw();
     }
 
-    private void iniImagesList() {
-        binder.searchView.setVisibility(View.GONE);
-        currentState = Constants.STATE.LIST;
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        binder.imagesList.setLayoutManager(layoutManager);
-        adapter = new ImagesAdapter(getActivity(), currentState, this);
-        binder.imagesList.setAdapter(adapter);
-        replaceSubscription(sharedPreference.getQuery(getActivity()));
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                if (positionStart == 0) {
-                    layoutManager.scrollToPosition(currentPosition);
-                }
-            }
-        });
+    private void openGridScreen() {
+        Screen gridScreen = screenFactory.getScreen(Constants.STATE.GRID,
+                screenFactory.getCurrentPosition(),
+                imagesViewModel,
+                binder,
+                adapter,
+                getActivity(),
+                screenFactory);
+        gridScreen.draw();
     }
 
     private void initSearchViewListener() {
@@ -101,7 +91,7 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 sharedPreference.saveQuery(getActivity(), query);
-                replaceSubscription(query);
+                openGridScreen();
                 binder.searchView.clearFocus();
                 return false;
             }
@@ -118,43 +108,12 @@ public class ImagesFragment extends Fragment  implements ImageSelectedListener {
         });
     }
 
-    private void replaceSubscription(String query) {
-        imagesViewModel.replaceSubscription(this, query);
-        observableViewModel();
-    }
 
-    private void observableViewModel() {
-        imagesViewModel.getArticleLiveData().observe(this, pagedList -> {
-            adapter.submitList(pagedList);
-        });
-        imagesViewModel.getNetworkState().observe(this, networkState -> {
-            if (networkState != null && networkState.getStatus() == NetworkState.Status.FAILED)
-            {
-                Snackbar.make(binder.getRoot(), getString(R.string.error_message), Snackbar.LENGTH_LONG)
-                        .setAction(getString(R.string.error_action_refresh), v ->
-                        {
-                            replaceSubscription(sharedPreference.getQuery(getActivity()));
-                            observableViewModel();
-                        })
-                        .setActionTextColor(ContextCompat.getColor(getActivity(), android.R.color.holo_orange_dark))
-                        .show();
-
-            }
-            adapter.setNetworkState(networkState);
-        });
-    }
-
-    @Override
-    public void onImageSelected(Item item, int position) {
-        currentPosition = position;
-        iniImagesList();
-    }
 
     public void backPressed() {
-        if (currentState == Constants.STATE.LIST)
+        if (screenFactory.getCurrentState() == Constants.STATE.LIST)
         {
-            initImagesGrid();
-            replaceSubscription(sharedPreference.getQuery(getActivity()));
+            openGridScreen();
         }
         else
         {
